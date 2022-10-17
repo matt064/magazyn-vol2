@@ -1,4 +1,5 @@
 import csv
+
 user_choice = -1
 sold_items = []
 
@@ -49,10 +50,42 @@ def sell_item():
                 new_dict = magazyn[k].copy()
                 new_dict['quantity'] = quantity
                 sold_items.append(new_dict)
-                print("Podana ilośc produktu sprzedana.")
-                
-    
+                print("Podana ilośc produktu sprzedana.")                    
     return magazyn, sold_items          
+
+
+def get_costs():
+    """zlicza wartośc produktów w magazynie"""
+    cost = [magazyn[k]['quantity'] * magazyn[k]['unit_price'] for k in range(len(magazyn))]
+    total_cost = sum(cost)
+    print("Wartość produktów w magazynie wynosi:", total_cost,"[PLN]")
+    return total_cost
+
+def get_income():
+    """zlicza zysk ze sprzedazy towarow"""
+    income = [sold_items[k]['quantity'] * sold_items[k]['unit_price'] for k in range(len(sold_items))]
+    total_income = sum(income)
+    print("Wartość sprzedanych towarów wynosi:", total_income,"[PLN]")
+    return total_income
+    
+
+def show_revenue():
+    """oblicza bilans zyskow/strat w magazynie""" 
+    cost = get_costs()
+    income = get_income()
+    profit = income - cost
+    print("Zysk z sprzedanych produktów wynosi:", profit,"[PLN]")
+    if profit <= 0:
+        print("Nie masz zysku, sprzedaj coś z magazynu.")
+   
+
+def export_items_to_csv():
+    with open("magazyn.csv", 'w') as csvfile:
+        fieldnames = ['name', 'type', 'quantity', 'unit_price']
+        csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for k in magazyn:
+            csvwriter.writerow(k)
 
 
 print()
@@ -69,7 +102,10 @@ while user_choice < 5:
         sell_item()
 
     if user_choice == 4:
-        print(sold_items)
+        show_revenue()
+
+    if user_choice == 5:
+        export_items_to_csv()
 
     
     print()
@@ -78,6 +114,9 @@ while user_choice < 5:
     print("2. Dodaj produkt do magazynu.")
     print("3. Sprzdaj produkt.")
     print("4. Bilans zysku")
+    print("5. Zapis danych")
+    print("6. Wczytanie danych")
+
 
     user_choice = int(input("\nAby poruszać się po menu, podaj cyfrę znajdująca sie przy zadaniu: "))
     print("Możesz wyjsc z programu w każdym momencie, wpisując 'exit'.")
